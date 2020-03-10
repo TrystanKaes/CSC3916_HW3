@@ -161,10 +161,6 @@ router.route('/movies')
             });
         }
     })
-    .post(function(req, res) {
-        res.json(getJSONObject(req,'movie saved')).status(200).end();
-    })
-
     .put(authJwtController.isAuthenticated, function (req, res) {
             console.log(req.body);
             res = res.status(200);
@@ -175,24 +171,37 @@ router.route('/movies')
             res.json(getJSONObject(req,'movie updated')).status(200).end()
         }
     )
-
     .delete(function(req, res) {
+            if (!req.body.username || !req.body.password) {
+                res.json({success: false, message: 'Please pass username and password.'});
+            } else {
+                var userNew = new User();
+                userNew.name = req.body.name;
+                userNew.username = req.body.username;
+                userNew.password = req.body.password;
 
-            var user = db.findOne(req.body.username);
+                User.findOne({username: userNew.username}).select('name username password').exec(function (err, user) {
+                    if (err) res.send(err);
 
-            if (!user) {
-                res.status(401).send({success: false, msg: 'Authentication failed. User not found.'});
+                    user.comparePassword(userNew.password, function (isMatch) {
+                        if (isMatch) {
+                            var userToken = {id: user._id, username: user.username};
+                            var token = jwt.sign(userToken, process.env.SECRET_KEY);
+                            if(!req.body.title){
+                                res.json({success: false, message: 'Please pass the title of movie to delete.'});
+                            }else{
+                                Movie.remove({"movies.title": req.body.title});
+                                res.json({success: false, message: 'Movie deleted.'});
+                            }
+
+                        } else {
+                            res.status(401).send({success: false, message: 'Authentication failed.'});
+                        }
+                    });
+
+
+                });
             }
-            else {
-                // check if password matches
-                if (req.body.password == user.password)  {
-                    res.json(getJSONObject(req,'movie deleted')).status(200).end();
-                }
-                else {
-                    res.status(401).send({success: false, msg: 'Authentication failed. Wrong password.'});
-                }
-            };
-
         }
     )
 

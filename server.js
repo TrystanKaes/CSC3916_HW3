@@ -134,7 +134,7 @@ router.route('/movies')
             res.json(movies).status(200).end();
         });
     })
-    .post('/movies', function(req, res) {
+    .post(authJwtController.isAuthenticated, function(req, res) {
         if (!req.body.title || !req.body.yearReleased || !req.body.genre || !req.body.actors) {
             res.json({success: false, message: 'Please pass title, yearReleased, genre, and actors.'});
         }

@@ -17,6 +17,33 @@ app.use(passport.initialize());
 
 var router = express.Router();
 
+
+function getJSONObject(req, _msg, status) {
+    var json = {
+        headers : "No Headers",
+        status: status,
+        env: process.env.UNIQUE_KEY,
+        body : "No Body",
+        msg : "No Message",
+        query : "No query"
+    };
+
+    if (req.body != null) {
+        json.body = req.body;
+    }
+    if (req.headers != null) {
+        json.headers = req.headers;
+    }
+    if (req.query != null) {
+        json.query = req.query;
+    }
+    json.msg = _msg
+
+    return json;
+}
+
+
+
 router.route('/postjwt')
     .post(authJwtController.isAuthenticated, function (req, res) {
             console.log(req.body);
@@ -96,6 +123,51 @@ router.post('/signin', function(req, res) {
 
 
     });
+});
+
+
+router.route('/movies')
+    .get(function(req, res) {
+        res.json(getJSONObject(req,'GET movies')).status(200).end();
+    })
+
+    .post(function(req, res) {
+        res.json(getJSONObject(req,'movie saved')).status(200).end();
+    })
+
+    .put(authJwtController.isAuthenticated, function (req, res) {
+            console.log(req.body);
+            res = res.status(200);
+            if (req.get('Content-Type')) {
+                console.log("Content-Type: " + req.get('Content-Type'));
+                res = res.type(req.get('Content-Type'));
+            }
+            res.json(getJSONObject(req,'movie updated')).status(200).end()
+        }
+    )
+
+    .delete(function(req, res) {
+
+            var user = db.findOne(req.body.username);
+
+            if (!user) {
+                res.status(401).send({success: false, msg: 'Authentication failed. User not found.'});
+            }
+            else {
+                // check if password matches
+                if (req.body.password == user.password)  {
+                    res.json(getJSONObject(req,'movie deleted')).status(200).end();
+                }
+                else {
+                    res.status(401).send({success: false, msg: 'Authentication failed. Wrong password.'});
+                }
+            };
+
+        }
+    )
+
+router.all('*', function(req, res) {
+    res.status(405).send({success: false, msg: 'Method Not Allowed'});
 });
 
 app.use('/', router);

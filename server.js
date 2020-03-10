@@ -127,10 +127,37 @@ router.post('/signin', function(req, res) {
 
 
 router.route('/movies')
-    .get(function(req, res) {
-        res.json(getJSONObject(req,'GET movies')).status(200).end();
+    .get(authJwtController.isAuthenticated, function (req, res) {
+        Movie.find(function (err, movies) {
+            if (err) res.send(err);
+            // return the users
+            res.json(movies).status(200).end();
+        });
     })
+    .post('/movies', function(req, res) {
+        if (!req.body.title || !req.body.yearReleased || !req.body.genre || !req.body.actors) {
+            res.json({success: false, message: 'Please pass title, yearReleased, genre, and actors.'});
+        }
+        else {
+            var movie = new Movie();
+            movie.title = req.body.title;
+            movie.yearReleased = req.body.yearReleased;
+            movie.genre = req.body.genre;
+            movie.actors = req.body.actors;
+            // save the user
+            movie.save(function(err) {
+                if (err) {
+                    // duplicate entry
+                    if (err.code == 11000)
+                        return res.json({ success: false, message: 'That movie already exists. '});
+                    else
+                        return res.send(err);
+                }
 
+                res.json({ success: true, message: 'Movie uploaded!' });
+            });
+        }
+    })
     .post(function(req, res) {
         res.json(getJSONObject(req,'movie saved')).status(200).end();
     })

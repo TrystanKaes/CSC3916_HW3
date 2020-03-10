@@ -192,7 +192,7 @@ router.route('/movies')
                             }else{
                                 var movieID = Movie.findOne({title: req.body.title});
                                 Movie.remove({"_id": movieID});
-                                res.json(movieID);
+                                res.json(movieID._id);
                             }
 
                         } else {

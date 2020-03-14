@@ -150,12 +150,13 @@ router.route('/movies')
             // save the user
             if (Movie.findOne({title: movie.title}) != null) {
                 movie.save(function (err) {
-                    if (err) return res.send(err);
-                    else res.json({success: true, message: 'Movie uploaded!'});
+                    if (err) {
+                        if (err == 11000)
+                            res.json({success: false, message: 'That movie already exists. '});
+                        else
+                        return res.send(err);
+                    }else res.json({success: true, message: 'Movie uploaded!'});
                 });
-            }
-            else{
-                res.json({success: false, message: 'That movie already exists. '});
             }
         }
     })

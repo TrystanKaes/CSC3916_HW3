@@ -148,17 +148,15 @@ router.route('/movies')
             movie.genre = req.body.genre;
             movie.actors = req.body.actors;
             // save the user
-            movie.save(function(err) {
-                if (err) {
-                    // duplicate entry
-                    if (err.code == 11000)
-                        return res.json({ success: false, message: 'That movie already exists. '});
-                    else
-                        return res.send(err);
-                }
-
-                res.json({ success: true, message: 'Movie uploaded!' });
-            });
+            if (Movie.findOne({title: movie.title}) == null) {
+                movie.save(function (err) {
+                    if (err) return res.send(err);
+                    else res.json({success: true, message: 'Movie uploaded!'});
+                });
+            }
+            else{
+                res.json({success: false, message: 'That movie already exists. '});
+            }
         }
     })
     .put(authJwtController.isAuthenticated, function (req, res) {
@@ -194,7 +192,7 @@ router.route('/movies')
                                     if(err){
                                         res.send(err);
                                     }
-                                    res.send("Movie deleted.");
+                                    res.send({success: true, message: "Movie deleted."});
                                 });
                             }
 

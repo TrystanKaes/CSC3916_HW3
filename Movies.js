@@ -24,6 +24,7 @@ MovieSchema.pre('save', function(next) {
     var movie = this;
     movie.isNew = true;
 
+    next();
 });
 
 // return the model

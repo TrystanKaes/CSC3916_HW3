@@ -161,15 +161,35 @@ router.route('/movies')
         }
     })
     .put(authJwtController.isAuthenticated, function (req, res) {
-            console.log(req.body);
-            res = res.status(200);
-            if (req.get('Content-Type')) {
-                console.log("Content-Type: " + req.get('Content-Type'));
-                res = res.type(req.get('Content-Type'));
-            }
-            res.json(getJSONObject(req,'movie updated')).status(200).end()
+        if(!req.body.title && (req.body.yearReleased || req.body.genre || req.body.actors || req.body.updateTitle)) {
+            return res.json({success: false, message: "Please pass title and updateTitle."});
+        }else{
+            Movie.findOne({title: req.body.title}, function (err, result) {
+                if (err) {
+                    return res.send(err);
+                }
+                else{
+                    if(result == null){
+                        return res.json({success: false, message: "Can't update nothing."});
+                    }
+                    else{
+                        if(req.body.updateTitle) result.title = req.body.updateTitle;
+                        if(req.body.actors) result.actors = req.body.actors;
+                        if(req.body.genre) result.genre = req.body.genre;
+                        if(req.body.yearReleased) result.yearReleased = req.body.yearReleased;
+
+                        Movie.update({title: req.body.title}, result, function (err, raw) {
+                            if(err){
+                                return res.send(err);
+                            }
+                            return res.json({success: true, message: "Movie succefully updated"});
+                        });
+                    }
+                }
+            })
         }
-    )
+        //res.status(200).send({status: 200, msg: 'movie updated', headers: req.headers, query: req.query, env: process.env.UNIQUE_KEY});
+    })
     .delete(function(req, res) {
             if (!req.body.username || !req.body.password) {
                 res.json({success: false, message: 'Please pass username and password.'});

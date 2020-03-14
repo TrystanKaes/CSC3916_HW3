@@ -139,7 +139,7 @@ router.route('/movies')
     })
     .post(authJwtController.isAuthenticated, function(req, res) {
         if (!req.body.title || !req.body.yearReleased || !req.body.genre || !req.body.actors) {
-            res.json({success: false, message: 'Please pass title, yearReleased, genre, and actors.'});
+            res.json({success: false, message: 'Please pass title, yearReleased, genre, and actors.'}).status(400);
         }
         else {
             var movie = new Movie();
@@ -190,6 +190,7 @@ router.route('/movies')
                             if(!req.body.title){
                                 res.json({success: false, message: 'Please pass the title of movie to delete.'});
                             }else{
+                                Movie.findOneAndDelete({title: req.body.title})
                                 res.json({success: true, message: 'This function should do delete.'});
                             }
 

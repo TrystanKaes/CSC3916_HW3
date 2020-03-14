@@ -22,7 +22,8 @@ var MovieSchema = new Schema({
 
 MovieSchema.pre('save', function(next) {
     var movie = this;
-    movie.isNew = true;
+
+    if (!movie.isModified('title')) return next();
 
     next();
 });

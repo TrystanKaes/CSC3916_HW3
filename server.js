@@ -190,8 +190,12 @@ router.route('/movies')
                             if(!req.body.title){
                                 res.json({success: false, message: 'Please pass the title of movie to delete.'});
                             }else{
-                                Movie.findOneAndDelete({title: req.body.title})
-                                res.json({success: true, message: 'This function should do delete.'});
+                                Movie.deleteOne({title: req.body.title}, function (err, raw) {
+                                    if(err){
+                                        res.send(err);
+                                    }
+                                    res.send("Movie deleted.");
+                                });
                             }
 
                         } else {
@@ -204,6 +208,7 @@ router.route('/movies')
             }
         }
     )
+
 
 router.all('*', function(req, res) {
     res.status(405).send({success: false, msg: 'Method Not Allowed'});

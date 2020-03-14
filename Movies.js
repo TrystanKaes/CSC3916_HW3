@@ -10,7 +10,7 @@ mongoose.set('useCreateIndex', true);
 
 // Movie schema
 var MovieSchema = new Schema({
-    title: { type: String, required: true, index: { unique: true }},
+    title: { type: String, required: true, unique: true },
     yearReleased: {type: Date, required: true},
     genre: {
         type: String,

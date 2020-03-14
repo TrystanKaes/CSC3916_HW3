@@ -148,7 +148,7 @@ router.route('/movies')
             movie.genre = req.body.genre;
             movie.actors = req.body.actors;
             // save the user
-            if (Movie.findOne({title: movie.title}) == null) {
+            if (Movie.findOne({title: movie.title}) != null) {
                 movie.save(function (err) {
                     if (err) return res.send(err);
                     else res.json({success: true, message: 'Movie uploaded!'});

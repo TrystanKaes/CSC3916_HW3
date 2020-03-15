@@ -17,7 +17,7 @@ var MovieSchema = new Schema({
         required: true,
         enum: ["Action", "Adventure", "Comedy", "Drama", "Fantasy", "Horror", "Mystery", "Thriller", "Western"]
     },
-    actors: {type: [String], required: true, validate: [arrayLimit, '{PATH} exceeds the limit of 10']}
+    actors: {type: [String], required: true, validate: [arrayLimit, '{PATH} array must be of size 3']}
 });
 
 function arrayLimit(val) {

@@ -161,7 +161,7 @@ router.route('/movies')
         }
     })
     .put(authJwtController.isAuthenticated, function (req, res) {
-        if(!req.body.title && (req.body.yearReleased || req.body.genre || req.body.actors || req.body.updateTitle)) {
+        if(!req.body.title && (!req.body.yearReleased || !req.body.genre || !req.body.actors || !req.body.updateTitle)) {
             return res.json({success: false, message: "Please pass title and updateTitle."});
         }else{
             Movie.findOne({title: req.body.title}, function (err, result) {

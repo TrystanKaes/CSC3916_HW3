@@ -161,8 +161,8 @@ router.route('/movies')
         }
     })
     .put(authJwtController.isAuthenticated, function (req, res) {
-        if(!req.body.title && (!req.body.yearReleased || !req.body.genre || !req.body.actors || !req.body.updateTitle)) {
-            return res.json({success: false, message: "Please pass title and updateTitle."});
+        if(!req.body.title && (req.body.yearReleased || req.body.genre || req.body.actors || req.body.updateTitle)) {
+            return res.json({success: false, message: "Please pass title and update field."});
         }else{
             Movie.findOne({title: req.body.title}, function (err, result) {
                 if (err) {
@@ -170,7 +170,7 @@ router.route('/movies')
                 }
                 else{
                     if(result == null){
-                        return res.json({success: false, message: "Can't update nothing."});
+                        return res.json({success: false, message: "Please pass update field."});
                     }
                     else{
                         if(req.body.updateTitle) result.title = req.body.updateTitle;
@@ -182,7 +182,7 @@ router.route('/movies')
                             if(err){
                                 return res.send(err);
                             }
-                            return res.json({success: true, message: "Movie succefully updated"});
+                            return res.json({success: true, message: "Movie successfully updated"});
                         });
                     }
                 }

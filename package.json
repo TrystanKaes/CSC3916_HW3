@@ -1,12 +1,12 @@
 {
-  "name": "week7a",
+  "name": "CSC3916_HW3",
   "version": "1.0.0",
-  "description": "week7a",
+  "description": "CSC3916_HW3",
   "main": "server.js",
   "scripts": {
     "test": "mocha --timeout 10000 --exit"
   },
-  "author": "Shawn McCarthy",
+  "author": "Trystan Kaes",
   "license": "ISC",
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
